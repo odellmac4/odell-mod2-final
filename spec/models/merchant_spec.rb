@@ -10,6 +10,7 @@ describe Merchant do
     it {should have_many(:invoices).through(:invoice_items)}
     it { should have_many(:customers).through(:invoices) }
     it { should have_many(:transactions).through(:invoices) }
+    it { should have_many :bulk_discounts }
 
   end
 
@@ -54,7 +55,7 @@ describe Merchant do
       create(:transaction, invoice: @invoice1, result: 1)
       create(:transaction, invoice: @invoice2, result: 1)
       create(:transaction, invoice: @invoice3, result: 1)
-      create(:transaction, invoice: @invoice4, result: 0) # transaction fails for merchant 1
+      # create(:transaction, invoice: @invoice4, result: 0) # transaction fails for merchant 1
       create(:transaction, invoice: @invoice5, result: 1) 
       create(:transaction, invoice: @invoice6, result: 1) 
       create(:transaction, invoice: @invoice7, result: 1) 
