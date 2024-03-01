@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe 'Bulk discounts index page' do
+RSpec.describe 'Merchant bulk discounts index page' do
     
     before :each do
         @merchant1 = Merchant.create!(name: "Hair Care")
@@ -25,7 +25,7 @@ RSpec.describe 'Bulk discounts index page' do
         end
 
         visit merchant_bulk_discounts_path(@merchant1)
-        
+
         within("#bulk_discount-#{@bulk_discount2.id}") do
             expect(page).to have_link("Bulk Discount: #{@bulk_discount2.id}")
             expect(page).to have_content("Percentage discount: 30.00%")
@@ -34,5 +34,15 @@ RSpec.describe 'Bulk discounts index page' do
             click_link "Bulk Discount: #{@bulk_discount2.id}"
             expect(current_path).to eq(merchant_bulk_discount_path(@merchant1, @bulk_discount2))
         end
+    end
+
+    it 'displays a button to create a new discount' do
+        # When I visit my bulk discounts index
+        # Then I see a link to create a new discount
+        expect(page).to have_link("Create New Discount")
+        # When I click this link
+        click_link "Create New Discount"
+        # Then I am taken to a new page where I see a form to add a new bulk discount
+        expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1))
     end
 end
