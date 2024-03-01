@@ -3,7 +3,7 @@
 <%= form_with url: "/merchants/#{@merchant.id}/bulk_discounts", method: :post do |form| %>
     <div>
     <%= form.label :percentage_discount, "Percentage Discount" %>
-    <%= form.number_field :percentage_discount%>
+    <%= form.number_field :percentage_discount, in: 0..1, step: 0.01%>
     </div>
     <div>
     <%= form.label :quantity_threshold, "Quantity Threshold" %>

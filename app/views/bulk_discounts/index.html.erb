@@ -1,4 +1,4 @@
-<h1> <%=@merchant.name%>'s Bulk Dsicounts </h1>
+<h2> <%=@merchant.name%>'s Bulk Dsicounts </h2>
 <% @bulk_discounts.each do |bulk_discount| %>
     <section id="bulk_discount-<%=bulk_discount.id%>">
         <p><%=link_to "Bulk Discount: #{bulk_discount.id}", merchant_bulk_discount_path(@merchant, bulk_discount) %></p>
@@ -8,4 +8,4 @@
     </section>
 <%end%>
 
-<h3> <%=link_to "Create New Discount", new_merchant_bulk_discount_path(@merchant) %> </h3>
+<h4> <%=link_to "Create New Discount", new_merchant_bulk_discount_path(@merchant) %> </h4>

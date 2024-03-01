@@ -59,29 +59,25 @@ RSpec.describe 'Merchant bulk discounts index page' do
             expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
             # And I no longer see the discount listed
         end
+
+        expect(page).to_not have_content("Bulk Discount: #{@bulk_discount1.id}")
+        expect(page).to_not have_content("Percentage discount: 20.00%")
+        expect(page).to_not have_content("Quantity Threshold: 10")
+
+        expect(page).to have_content("Bulk Discount: #{@bulk_discount2.id}")
         
         visit merchant_bulk_discounts_path(@merchant1)
 
-        within("#bulk_discount-#{@bulk_discount1.id}") do
-            expect(page).to_not have_content("Bulk Discount: #{@bulk_discount1.id}")
-            expect(page).to_not have_content("Percentage discount: 20.00%")
-            expect(page).to_not have_content("Quantity Threshold: 10")
+        within("#bulk_discount-#{@bulk_discount2.id}") do
+            # Then next to each bulk discount I see a button to delete it
+            expect(page).to have_button("Delete")
+            # When I click this button
+            click_button("Delete")
+            # Then I am redirected back to the bulk discounts index page
+            expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
+            # And I no longer see the discount listed
         end
-        
-        # visit merchant_bulk_discounts_path(@merchant1)
 
-        # within("#bulk_discount-#{@bulk_discount2.id}") do
-        #     # Then next to each bulk discount I see a button to delete it
-        #     expect(page).to have_button("Delete")
-        #     # When I click this button
-        #     click_button("Delete")
-        #     # Then I am redirected back to the bulk discounts index page
-        #     expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
-        #     # And I no longer see the discount listed
-        #     visit merchant_bulk_discounts_path(@merchant1)
-        #     expect(page).to_not have_content("Bulk Discount: #{@bulk_discount2.id}")
-        #     expect(page).to_not have_content("Percentage discount: 30.00%")
-        #     expect(page).to_not have_content("Quantity Threshold: 20")
-        # end
+        expect(page).to_not have_content("Bulk Discount: #{@bulk_discount2.id}")
     end
 end
