@@ -4,6 +4,7 @@
         <p><%=link_to "Bulk Discount: #{bulk_discount.id}", merchant_bulk_discount_path(@merchant, bulk_discount) %></p>
         <p> Percentage discount: <%=float_to_percent(bulk_discount.percentage_discount)%> </p>
         <p> Quantity Threshold: <%=bulk_discount.quantity_threshold%> </p>
+        <p><%= button_to "Delete", merchant_bulk_discount_path(@merchant, bulk_discount), method: :delete%></p>
     </section>
 <%end%>
 

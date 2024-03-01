@@ -45,4 +45,43 @@ RSpec.describe 'Merchant bulk discounts index page' do
         # Then I am taken to a new page where I see a form to add a new bulk discount
         expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1))
     end
+
+    it 'can delete a bulk discount' do
+        # As a merchant
+        # When I visit my bulk discounts index
+        within("#bulk_discount-#{@bulk_discount1.id}") do
+            # Then next to each bulk discount I see a button to delete it
+            expect(page).to have_content("Bulk Discount: #{@bulk_discount1.id}")
+            expect(page).to have_button("Delete")
+            # When I click this button
+            click_button("Delete")
+            # Then I am redirected back to the bulk discounts index page
+            expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
+            # And I no longer see the discount listed
+        end
+        
+        visit merchant_bulk_discounts_path(@merchant1)
+
+        within("#bulk_discount-#{@bulk_discount1.id}") do
+            expect(page).to_not have_content("Bulk Discount: #{@bulk_discount1.id}")
+            expect(page).to_not have_content("Percentage discount: 20.00%")
+            expect(page).to_not have_content("Quantity Threshold: 10")
+        end
+        
+        # visit merchant_bulk_discounts_path(@merchant1)
+
+        # within("#bulk_discount-#{@bulk_discount2.id}") do
+        #     # Then next to each bulk discount I see a button to delete it
+        #     expect(page).to have_button("Delete")
+        #     # When I click this button
+        #     click_button("Delete")
+        #     # Then I am redirected back to the bulk discounts index page
+        #     expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
+        #     # And I no longer see the discount listed
+        #     visit merchant_bulk_discounts_path(@merchant1)
+        #     expect(page).to_not have_content("Bulk Discount: #{@bulk_discount2.id}")
+        #     expect(page).to_not have_content("Percentage discount: 30.00%")
+        #     expect(page).to_not have_content("Quantity Threshold: 20")
+        # end
+    end
 end
