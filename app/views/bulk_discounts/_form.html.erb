@@ -1,0 +1,17 @@
+<%# locals: (model:, path:, method:, button_name:) - %>
+
+<%= form_with model: model, url: path, method: method, local: true do |form| %>
+    <div>
+    <%= form.label :percentage_discount, "Percentage Discount" %>
+    <%= form.number_field :percentage_discount, in: 0..1, step: 0.01, value: model.percentage_discount unless model.new_record?%>
+    <%= form.number_field :percentage_discount, in: 0..1, step: 0.01 if model.new_record?%>
+    </div>
+    <div>
+    <%= form.label :quantity_threshold, "Quantity Threshold" %>
+    <%= form.number_field :quantity_threshold, value: model.quantity_threshold unless model.new_record?%>
+    <%= form.number_field :quantity_threshold if model.new_record?%>
+    </div>
+    <div>
+    <%= form.submit button_name %>
+    </div>
+<% end %>
