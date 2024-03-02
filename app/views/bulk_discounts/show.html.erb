@@ -1,7 +1,7 @@
-<% @merchant.bulk_discounts.each do |bulk_discount| %>
-    <h2> Bulk Discount - <%=bulk_discount.id%> </h2>
+    <h2> Bulk Discount - <%=@bulk_discount.id%> </h2>
     <ul>
-        <li> Percentage discount: <%=float_to_percent(bulk_discount.percentage_discount)%> </li>
-        <li> Quantity threshold: <%=bulk_discount.quantity_threshold%> </li>
-    </ul>    
-<%end%>
+        <li> Percentage discount: <%=float_to_percent(@bulk_discount.percentage_discount)%> </li>
+        <li> Quantity threshold: <%=@bulk_discount.quantity_threshold%> </li>
+    </ul>  
+
+    <%= link_to "Edit Bulk Discount", edit_merchant_bulk_discount_path(@merchant, @bulk_discount) %>
