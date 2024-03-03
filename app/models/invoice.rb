@@ -7,10 +7,15 @@ class Invoice < ApplicationRecord
   has_many :invoice_items
   has_many :items, through: :invoice_items
   has_many :merchants, through: :items
+  has_many :bulk_discounts, through: :merchants
 
   enum status: [:cancelled, :in_progress, :completed]
 
   def total_revenue
     invoice_items.sum("unit_price * quantity")
   end
+
+  # def discounted_revenue
+  #   have to build a method out in invoice_items to check if item eligible for discount
+  # end
 end
