@@ -15,7 +15,11 @@ class Invoice < ApplicationRecord
     invoice_items.sum("unit_price * quantity")
   end
 
-  # def discounted_revenue
-  #   have to build a method out in invoice_items to check if item eligible for discount
-  # end
+  def discounted_revenue
+    invoice_items.discounted_revenue
+  end
+
+  def revenue_excluding_discounts
+    total_revenue - discounted_revenue
+  end
 end
