@@ -37,7 +37,7 @@
           <tr class="tr">
             <td style="text-align:center"><%= i.item.name %>
             <section id="discount-link-<%=i.id%>">
-              <% if i.class.discount_eligible.include?(i) %>
+              <% if i.discount_applied.present? %>
                     <p><%=link_to "Bulk Discount #{i.discount_applied.id}", merchant_bulk_discount_path(@merchant, i.discount_applied)%></p>
               <%end%>
             </section>

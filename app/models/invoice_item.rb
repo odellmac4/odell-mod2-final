@@ -34,6 +34,8 @@ class InvoiceItem < ApplicationRecord
   end
 
   def discount_applied
+    if self.class.discount_eligible.include?(self)
       bulk_discounts.order(percentage_discount: :desc).first
+    end
   end
 end
