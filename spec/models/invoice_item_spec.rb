@@ -52,13 +52,14 @@ RSpec.describe InvoiceItem, type: :model do
       @bulk_discount4 = BulkDiscount.create!(percentage_discount: 0.75, quantity_threshold: 10, merchant_id: @m2.id)
     end
     it 'incomplete_invoices' do
-      expect(InvoiceItem.incomplete_invoices).to match_array([@i1, @i3, @i2])
+      expect(InvoiceItem.incomplete_invoices).to match_array([@i1, @i2, @i3])
     end
 
     it '#discount_eligible' do
       expect(InvoiceItem.discount_eligible).to match_array([@ii_2, @ii_4, @ii_6, @ii_7, @ii_8])
 
       expect(@i1.invoice_items.discount_eligible).to match_array([@ii_2, @ii_6, @ii_7])
+      expect(@i2.invoice_items.discount_eligible).to match_array([@ii_8])
     end
 
     it '#max_discount_percentage' do
@@ -89,6 +90,38 @@ RSpec.describe InvoiceItem, type: :model do
       expect(@invoice_2.invoice_items).to eq([@ii_2, @ii_12])
       expect(@invoice_2.invoice_items.discount_eligible).to eq([@ii_12])
       expect(@invoice_2.invoice_items.discounted_revenue).to eq(50.4)
+    end
+  end
+
+  describe 'insance methods' do
+    before(:each) do
+      @merchant1 = Merchant.create!(name: 'Hair Care')
+      @merchant2 = Merchant.create!(name: 'Dog Shop')
+      @item_1 = Item.create!(name: "Shampoo", description: "This washes your hair", unit_price: 10, merchant_id: @merchant1.id, status: 1)
+      @item_8 = Item.create!(name: "Butterfly Clip", description: "This holds up your hair but in a clip", unit_price: 5, merchant_id: @merchant1.id)
+      @item_2 = Item.create!(name: "Bone", description: "Bone", unit_price: 9, merchant_id: @merchant2.id)
+      @item_9 = Item.create!(name: "Rope", description: "Rope", unit_price: 7, merchant_id: @merchant2.id)
+      @customer_1 = Customer.create!(first_name: 'Joey', last_name: 'Smith')
+      @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-27 14:54:09")
+      @invoice_2 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-17 14:54:09")
+      @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
+      @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 1, unit_price: 10, status: 1)
+      @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_2.id, quantity: 9, unit_price: 9, status: 1)
+      @ii_12 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_9.id, quantity: 12, unit_price: 7, status: 1)
+
+      @bulk_discount1 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 8, merchant_id: @merchant1.id)
+      @bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.25, quantity_threshold: 9, merchant_id: @merchant1.id)
+      @bulk_discount3 = BulkDiscount.create!(percentage_discount: 0.4, quantity_threshold: 10, merchant_id: @merchant2.id)
+      @bulk_discount4 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 12, merchant_id: @merchant2.id)
+      @bulk_discount5 = BulkDiscount.create!(percentage_discount: 0.1, quantity_threshold: 7, merchant_id: @merchant1.id)
+    end
+
+    it 'retrieves the discount applied to the invoice_item' do
+      expect(@ii_12.bulk_discounts).to eq([@bulk_discount3, @bulk_discount4])
+      expect(@ii_12.discount_applied).to eq(@bulk_discount3)
+
+      expect(@ii_1.bulk_discounts).to eq([@bulk_discount1, @bulk_discount2, @bulk_discount5])
+      expect(@ii_1.discount_applied).to eq(@bulk_discount2)
     end
   end
 end

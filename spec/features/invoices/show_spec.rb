@@ -100,37 +100,53 @@ RSpec.describe "invoices show" do
     end
   end
 
-  it 'shows total revenue (not including discounts) and total discounted revenue' do
-    @merchant1 = Merchant.create!(name: 'Hair Care')
-    @merchant2 = Merchant.create!(name: 'Dog Shop')
-    @item_1 = Item.create!(name: "Shampoo", description: "This washes your hair", unit_price: 10, merchant_id: @merchant1.id, status: 1)
-    @item_8 = Item.create!(name: "Butterfly Clip", description: "This holds up your hair but in a clip", unit_price: 5, merchant_id: @merchant1.id)
-    @item_2 = Item.create!(name: "Bone", description: "Bone", unit_price: 9, merchant_id: @merchant2.id)
-    @item_9 = Item.create!(name: "Rope", description: "Rope", unit_price: 7, merchant_id: @merchant2.id)
-    @customer_1 = Customer.create!(first_name: 'Joey', last_name: 'Smith')
-    @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-27 14:54:09")
-    @invoice_2 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-17 14:54:09")
-    @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
-    @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 1, unit_price: 10, status: 1)
-    @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_2.id, quantity: 9, unit_price: 9, status: 1)
-    @ii_12 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_9.id, quantity: 12, unit_price: 7, status: 1)
+  describe 'Odell user stories' do
+    before(:each) do
+      @merchant1 = Merchant.create!(name: 'Hair Care')
+      @merchant2 = Merchant.create!(name: 'Dog Shop')
+      @item_1 = Item.create!(name: "Shampoo", description: "This washes your hair", unit_price: 10, merchant_id: @merchant1.id, status: 1)
+      @item_8 = Item.create!(name: "Butterfly Clip", description: "This holds up your hair but in a clip", unit_price: 5, merchant_id: @merchant1.id)
+      @item_2 = Item.create!(name: "Bone", description: "Bone", unit_price: 9, merchant_id: @merchant2.id)
+      @item_9 = Item.create!(name: "Rope", description: "Rope", unit_price: 7, merchant_id: @merchant2.id)
+      @customer_1 = Customer.create!(first_name: 'Joey', last_name: 'Smith')
+      @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-27 14:54:09")
+      @invoice_2 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-17 14:54:09")
+      @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
+      @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 1, unit_price: 10, status: 1)
+      @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_2.id, quantity: 9, unit_price: 9, status: 1)
+      @ii_12 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_9.id, quantity: 12, unit_price: 7, status: 1)
 
-    bulk_discount1 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 8, merchant_id: @merchant1.id)
-    bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.4, quantity_threshold: 10, merchant_id: @merchant2.id)
-    bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 12, merchant_id: @merchant2.id)
-     
-    
-    # As a merchant
-    # When I visit my merchant invoice show page
-    visit merchant_invoice_path(@merchant1, @invoice_1)
-    #items from same merchant
-    # @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 12, unit_price: 6, status: 1)
-    # @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
+      @bulk_discount1 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 8, merchant_id: @merchant1.id)
+      @bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.4, quantity_threshold: 10, merchant_id: @merchant2.id)
+      @bulk_discount3 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 12, merchant_id: @merchant2.id)
+      
+    end
+    it 'shows total revenue (not including discounts) and total discounted revenue' do
+      # As a merchant
+      # When I visit my merchant invoice show page
+      visit merchant_invoice_path(@merchant1, @invoice_1)
+      # Then I see the total revenue for my merchant from this invoice (not including discounts)
+      expect(page).to have_content("Total Revenue (excluding discounts): 28")
+      # And I see the total discounted revenue for my merchant from this invoice which includes bulk discounts in the calculation
+      expect(page).to have_content("Total Discounted Revenue: 72")
+    end
 
-    # Then I see the total revenue for my merchant from this invoice (not including discounts)
-    expect(page).to have_content("Total Revenue (excluding discounts): 28")
-    # And I see the total discounted revenue for my merchant from this invoice which includes bulk discounts in the calculation
-    expect(page).to have_content("Total Discounted Revenue: 72")
+    it 'display a link to the bulk discount for an invoice item' do
+      # As a merchant
+      # When I visit my merchant invoice show page
+      visit merchant_invoice_path(@merchant2, @invoice_2)
+      # Next to each invoice item I see a link to the show page for the bulk discount that was applied (if any)
+      within("#the-status-#{@ii_12.id}") do
+        expect(page).to have_link("Bulk Discount #{@bulk_discount2.id}")
+        click_on "Bulk Discount #{@bulk_discount2.id}"
+        expect(current_path).to eq(merchant_bulk_discount_path(@merchant2, @bulk_discount2))
+        
+      end
+      
+      visit merchant_invoice_path(@merchant2, @invoice_2)
+      within("#the-status-#{@ii_2.id}") do
+        expect(page).to have_no_link("Bulk Discount #{@bulk_discount2.id}")
+      end
+    end
   end
-
 end

@@ -69,4 +69,39 @@ describe "Admin Invoices Index Page" do
       expect(@i1.status).to eq("completed")
     end
   end
+
+  describe 'User story 8' do
+    before(:each) do
+      @merchant1 = Merchant.create!(name: 'Hair Care')
+      @merchant2 = Merchant.create!(name: 'Dog Shop')
+      @item_1 = Item.create!(name: "Shampoo", description: "This washes your hair", unit_price: 10, merchant_id: @merchant1.id, status: 1)
+      @item_8 = Item.create!(name: "Butterfly Clip", description: "This holds up your hair but in a clip", unit_price: 5, merchant_id: @merchant1.id)
+      @item_2 = Item.create!(name: "Bone", description: "Bone", unit_price: 9, merchant_id: @merchant2.id)
+      @item_9 = Item.create!(name: "Rope", description: "Rope", unit_price: 7, merchant_id: @merchant2.id)
+      @customer_1 = Customer.create!(first_name: 'Joey', last_name: 'Smith')
+      @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-27 14:54:09")
+      @invoice_2 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-17 14:54:09")
+      @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
+      @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 1, unit_price: 10, status: 1)
+      @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_2.id, quantity: 9, unit_price: 9, status: 1)
+      @ii_12 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_9.id, quantity: 12, unit_price: 7, status: 1)
+
+      @bulk_discount1 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 8, merchant_id: @merchant1.id)
+      @bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.4, quantity_threshold: 10, merchant_id: @merchant2.id)
+      @bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 12, merchant_id: @merchant2.id)
+    end
+    it 'displays total revenue excluding discounts and discounted revenue' do
+      # As an admin
+      # When I visit an admin invoice show page
+      visit admin_invoice_path(@invoice_1)
+      # Then I see the total revenue from this invoice (not including discounts)
+      expect(page).to have_content("Total Revenue (excluding discounts): $28.00")
+      # And I see the total discounted revenue from this invoice which includes bulk discounts in the calculation
+      expect(page).to have_content("Total Discounted Revenue: $72.00")
+
+      visit admin_invoice_path(@invoice_2)
+      expect(page).to have_content("Total Revenue (excluding discounts): $114.60")
+      expect(page).to have_content("Total Discounted Revenue: $50.40")
+    end
+  end
 end
