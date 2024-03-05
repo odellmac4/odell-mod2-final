@@ -7,6 +7,7 @@
 #   Character.create(name: "Luke", movie: movies.first)
 InvoiceItem.destroy_all
 Transaction.destroy_all
+BulkDiscount.destroy_all
 Invoice.destroy_all
 Customer.destroy_all
 Item.destroy_all
