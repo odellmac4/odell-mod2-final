@@ -122,7 +122,6 @@ RSpec.describe "invoices show" do
       
     end
     it 'shows total revenue (not including discounts) and total discounted revenue' do
-      # As a merchant
       # When I visit my merchant invoice show page
       visit merchant_invoice_path(@merchant1, @invoice_1)
       # Then I see the total revenue for my merchant from this invoice (not including discounts)
