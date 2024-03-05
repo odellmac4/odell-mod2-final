@@ -36,5 +36,4 @@ class InvoiceItem < ApplicationRecord
   def discount_applied
       bulk_discounts.order(percentage_discount: :desc).first
   end
-
 end

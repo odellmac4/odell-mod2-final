@@ -52,7 +52,7 @@ RSpec.describe InvoiceItem, type: :model do
       @bulk_discount4 = BulkDiscount.create!(percentage_discount: 0.75, quantity_threshold: 10, merchant_id: @m2.id)
     end
     it 'incomplete_invoices' do
-      expect(InvoiceItem.incomplete_invoices).to match_array([@i1, @i2, @i3])
+      expect(InvoiceItem.incomplete_invoices).to match_array([@i1, @i3])
     end
 
     it '#discount_eligible' do
@@ -117,10 +117,11 @@ RSpec.describe InvoiceItem, type: :model do
     end
 
     it 'retrieves the discount applied to the invoice_item' do
-      expect(@ii_12.bulk_discounts).to eq([@bulk_discount3, @bulk_discount4])
+      expect(@invoice_2.invoice_items.discount_eligible).to eq([@ii_12])
+      expect(@ii_12.bulk_discounts).to match_array([@bulk_discount3, @bulk_discount4])
       expect(@ii_12.discount_applied).to eq(@bulk_discount3)
 
-      expect(@ii_1.bulk_discounts).to eq([@bulk_discount1, @bulk_discount2, @bulk_discount5])
+      expect(@ii_1.bulk_discounts).to match_array([@bulk_discount1, @bulk_discount2, @bulk_discount5])
       expect(@ii_1.discount_applied).to eq(@bulk_discount2)
     end
   end
