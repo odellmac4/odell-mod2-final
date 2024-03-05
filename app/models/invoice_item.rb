@@ -21,19 +21,17 @@ class InvoiceItem < ApplicationRecord
   end
 
   def self.max_discount_percentage
-    # require'pry';binding.pry
     self.joins(:bulk_discounts).maximum(:percentage_discount)
   end
 
   def self.discounted_revenue
-    # max_discount_percentage = self.max_discount_percentage
-
     if max_discount_percentage.present?
       total_discounted_revenue = self.discount_eligible
       .sum("invoice_items.unit_price * invoice_items.quantity * (1 - #{self.max_discount_percentage})")
-    else
-      total_discounted_revenue = self.sum("invoice_items.unit_price * invoice_items.quantity")
     end
   end
 
+  def discount_applied
+      bulk_discounts.order(percentage_discount: :desc).first
+  end
 end

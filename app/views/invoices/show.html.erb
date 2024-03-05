@@ -46,8 +46,14 @@
               </td>
           </tr>
         </section>
-      <% end %>
+      <%end%>
     </tbody>
   </table>
+ <h4>Bulk Discounts Applied:</h4>
+  <%@invoice.invoice_items.discount_eligible.each do |invoice_item|%>
+    <section id="invoice_item-<%=invoice_item.id%>">
+      <p><%= invoice_item.item.name%> - <%=link_to "Bulk Discount #{invoice_item.discount_applied.id}", merchant_bulk_discount_path(@merchant, invoice_item.discount_applied)%></p>
+    </section>
+  <%end%>
 
 </body>

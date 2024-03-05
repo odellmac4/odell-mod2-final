@@ -23,6 +23,18 @@ RSpec.describe 'Merchant bulk discounts new page' do
         expect(current_path).to eq(merchant_bulk_discounts_path(@merchant1))
         
         expect("Percentage discount: 40.00%").to appear_before("Quantity Threshold: 30")
+        expect(page).to have_content("Successfully Created!")
         
+    end
+
+    it 'displays flash notice if form not created properly' do
+        
+        fill_in "Percentage Discount", with: ""
+        fill_in "Quantity Threshold", with: 30
+
+        click_on "Create"
+        expect(current_path).to eq(new_merchant_bulk_discount_path(@merchant1))
+
+        expect(page).to have_content("Fill in all fields.")
     end
 end
