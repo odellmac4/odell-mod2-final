@@ -52,7 +52,7 @@ RSpec.describe InvoiceItem, type: :model do
       @bulk_discount4 = BulkDiscount.create!(percentage_discount: 0.75, quantity_threshold: 10, merchant_id: @m2.id)
     end
     it 'incomplete_invoices' do
-      expect(InvoiceItem.incomplete_invoices).to match_array([@i1, @i3])
+      expect(InvoiceItem.incomplete_invoices).to eq([@i1, @i2, @i3])
     end
 
     it '#discount_eligible' do
@@ -76,10 +76,12 @@ RSpec.describe InvoiceItem, type: :model do
       @customer_1 = Customer.create!(first_name: 'Joey', last_name: 'Smith')
       @invoice_1 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-27 14:54:09")
       @invoice_2 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-17 14:54:09")
+      @invoice_3 = Invoice.create!(customer_id: @customer_1.id, status: 2, created_at: "2012-03-23 13:56:09")
       @ii_1 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_1.id, quantity: 9, unit_price: 10, status: 2)
       @ii_11 = InvoiceItem.create!(invoice_id: @invoice_1.id, item_id: @item_8.id, quantity: 1, unit_price: 10, status: 1)
       @ii_2 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_2.id, quantity: 9, unit_price: 9, status: 1)
       @ii_12 = InvoiceItem.create!(invoice_id: @invoice_2.id, item_id: @item_9.id, quantity: 12, unit_price: 7, status: 1)
+      @ii_13 = InvoiceItem.create!(invoice_id: @invoice_3.id, item_id: @item_1.id, quantity: 5, unit_price: 7, status: 1)
 
       bulk_discount1 = BulkDiscount.create!(percentage_discount: 0.2, quantity_threshold: 8, merchant_id: @merchant1.id)
       bulk_discount2 = BulkDiscount.create!(percentage_discount: 0.4, quantity_threshold: 10, merchant_id: @merchant2.id)
@@ -90,6 +92,8 @@ RSpec.describe InvoiceItem, type: :model do
       expect(@invoice_2.invoice_items).to eq([@ii_2, @ii_12])
       expect(@invoice_2.invoice_items.discount_eligible).to eq([@ii_12])
       expect(@invoice_2.invoice_items.discounted_revenue).to eq(50.4)
+
+      expect(@invoice_3.invoice_items.discounted_revenue).to eq(0)
     end
   end
 

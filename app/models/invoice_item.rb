@@ -28,8 +28,6 @@ class InvoiceItem < ApplicationRecord
     if max_discount_percentage.present?
       total_discounted_revenue = self.discount_eligible
       .sum("invoice_items.unit_price * invoice_items.quantity * (1 - #{self.max_discount_percentage})")
-    else
-      total_discounted_revenue = self.sum("invoice_items.unit_price * invoice_items.quantity")
     end
   end
 
