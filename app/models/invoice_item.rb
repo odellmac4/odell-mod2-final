@@ -16,10 +16,6 @@ class InvoiceItem < ApplicationRecord
     Invoice.order(created_at: :asc).find(invoice_ids)
   end
 
-  def self.discount_eligible
-    self.joins(:bulk_discounts).where("quantity >= bulk_discounts.quantity_threshold").distinct
-  end
-
   def max_discount_percentage
     bulk_discount = self.discount_applied
     if bulk_discount
