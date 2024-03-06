@@ -63,7 +63,9 @@ RSpec.describe InvoiceItem, type: :model do
     end
 
     it '#max_discount_percentage' do
-      expect(InvoiceItem.max_discount_percentage).to eq(0.75)
+      expect(@ii_7.max_discount_percentage).to eq(0.75)
+      expect(@ii_6.max_discount_percentage).to eq(0.2)
+      expect(@ii_1.max_discount_percentage).to eq(nil)
     end
 
     it '#discounted_revenue' do
@@ -91,7 +93,7 @@ RSpec.describe InvoiceItem, type: :model do
       expect(@invoice_1.invoice_items.discounted_revenue).to eq(72)
       expect(@invoice_2.invoice_items).to eq([@ii_2, @ii_12])
       expect(@invoice_2.invoice_items.discount_eligible).to eq([@ii_12])
-      expect(@invoice_2.invoice_items.discounted_revenue).to eq(50.4)
+      expect(@invoice_2.invoice_items.discounted_revenue).to eq(50.400000000000006)
 
       expect(@invoice_3.invoice_items.discounted_revenue).to eq(0)
     end
