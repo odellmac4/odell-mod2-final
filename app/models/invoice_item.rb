@@ -20,20 +20,27 @@ class InvoiceItem < ApplicationRecord
     self.joins(:bulk_discounts).where("quantity >= bulk_discounts.quantity_threshold").distinct
   end
 
-  def self.max_discount_percentage
-    self.joins(:bulk_discounts).maximum(:percentage_discount)
+  def max_discount_percentage
+    discount_applied.percentage_discount
   end
 
   def self.discounted_revenue
-    if max_discount_percentage.present?
-      total_discounted_revenue = self.discount_eligible
-      .sum("invoice_items.unit_price * invoice_items.quantity * (1 - #{self.max_discount_percentage})")
-    else
-      total_discounted_revenue = 0
+    total_discounted_revenue = 0
+
+    self.discount_eligible.each do |invoice_item|
+
+      max_discount_percentage = invoice_item.max_discount_percentage
+
+      if max_discount_percentage.present?
+        discounted_price = invoice_item.unit_price * (1 - max_discount_percentage)
+        total_discounted_revenue += discounted_price * invoice_item.quantity
+      else
+        total_discounted_revenue = 0
+      end
     end
   end
 
   def discount_applied
-      bulk_discounts.where("#{self.quantity} >= bulk_discounts.quantity_threshold").order(percentage_discount: :desc).first
+      bulk_discounts.where("bulk_discounts.quantity_threshold <= ?", quantity).order(percentage_discount: :desc).first
   end
 end
